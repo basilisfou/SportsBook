@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -43,49 +42,47 @@ fun HomeScreen(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreenContent(
     data: List<SportUiModel>,
     onClickFavorite:  ( event : EventUiModel) -> Unit
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize(), content = {
-        data.forEach { sport ->
-            item {
-                var expand by rememberSaveable {
-                    mutableStateOf(true)
+        items(data.size){ indexSport ->
+            val sport = data[indexSport]
+            var expand by rememberSaveable {
+                mutableStateOf(true)
+            }
+
+            SportItem(
+                sport = sport,
+                expand = expand,
+                onExpandListener = {
+                    expand = !expand
                 }
+            )
 
-                SportItem(
-                    sport = sport,
-                    expand = expand,
-                    onExpandListener = {
-                        expand = !expand
-                    }
+            AnimatedVisibility(
+                visible = expand,
+                modifier = Modifier
+                    .fillMaxWidth(),
+                enter = expandVertically(
+                    animationSpec = tween(durationMillis = 500),
+                ),
+                exit = shrinkVertically(
+                    animationSpec = tween(durationMillis = 500),
                 )
-
-                AnimatedVisibility(
-                    visible = expand,
+            ) {
+                LazyRow(
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    enter = expandVertically(
-                        animationSpec = tween(durationMillis = 500),
-                    ),
-                    exit = shrinkVertically(
-                        animationSpec = tween(durationMillis = 500),
-                    )
+                        .fillMaxWidth()
+                        .background(color = Primary)
                 ) {
-                    LazyRow(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(color = Primary)
-                    ) {
-                        items(sport.events.value.size) { index ->
-                            EventItem(
-                                event = sport.events.value[index],
-                                onClickFavorite = onClickFavorite
-                            )
-                        }
+                    items(sport.events.value.size) { index ->
+                        EventItem(
+                            event = sport.events.value[index],
+                            onClickFavorite = onClickFavorite
+                        )
                     }
                 }
             }
