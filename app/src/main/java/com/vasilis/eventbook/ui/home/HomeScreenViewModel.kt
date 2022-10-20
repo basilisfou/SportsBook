@@ -94,7 +94,7 @@ class HomeScreenViewModel @Inject constructor(
                 sortBy { eventToSort ->
                     eventToSort.isFavorite.value.not()
                 }
-                toMutableStateList()
+                //toMutableStateList()
             }
 
     }

@@ -12,7 +12,7 @@ import java.util.*
  */
 @Composable
 fun Timer(
-    eventTime : Date,
+    eventTime : Date?,
     changeTimeDelta: (Long?) -> Unit
 ) {
     val countDownTimer = object : CountDownTimer(TimeUseCase().timeDeltaTillFinish(eventTime) ?: 0L, 1000) {

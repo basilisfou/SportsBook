@@ -17,6 +17,6 @@ data class EventUiModel(
     val eventOpponent1: String = "",
     val eventOpponent2: String = "",
     val sportCategory: String = "",
-    val timeOfEvent: Date,
+    val timeOfEvent: Date?,
     val isFavorite: MutableState<Boolean> = mutableStateOf(false)
 )

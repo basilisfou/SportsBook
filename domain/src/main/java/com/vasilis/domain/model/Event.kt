@@ -7,10 +7,10 @@ import java.util.*
  * vasilisfouroulis@gmail.com
  */
 data class Event(
-    val id: Int,
-    val eventOpponent1 : String,
-    val eventOpponent2 : String,
-    val timeOfEvent : Date,
-    val sportCategory: String,
+    val id: Int = 0,
+    val eventOpponent1 : String = "",
+    val eventOpponent2 : String = "",
+    val timeOfEvent : Date? = null,
+    val sportCategory: String = "",
     var isFavorite: Boolean = false
 )

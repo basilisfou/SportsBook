@@ -41,6 +41,16 @@ internal class TimeUseCaseTest{
     }
 
     @Test
+    fun `given time of event is null then assert result is null`() {
+        //arrange
+        val timeOfEvent = addHoursToJavaUtilDate(now, -1)
+        //act
+        val result = SUT.timeDeltaTillFinish(timeOfEvent)
+        //assert
+        Assert.assertEquals(result , null)
+    }
+
+    @Test
     fun `given time of event is equals with Now then assert time delta is null`() {
         //arrange
         val timeOfEvent = now

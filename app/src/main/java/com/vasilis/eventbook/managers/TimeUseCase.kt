@@ -9,9 +9,9 @@ import java.util.*
 class TimeUseCase(
     private val now: Date = Date()
 ) {
-    fun timeDeltaTillFinish(timeOfEvent: Date): Long? {
-        return if (now.before(timeOfEvent)) {
-            timeOfEvent.time - now.time
-        } else null
+    fun timeDeltaTillFinish(timeOfEvent: Date?): Long? {
+        return timeOfEvent
+            ?.takeIf { now.before(it) }
+            ?.let { timeOfEvent.time - now.time }
     }
 }

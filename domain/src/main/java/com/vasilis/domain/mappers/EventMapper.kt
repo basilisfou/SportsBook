@@ -22,7 +22,7 @@ class EventMapperImpl : EventMapper {
                 id = response?.i?.takeIf { it -> it.isDigitsOnly() }?.toInt() ?: 0,
                 eventOpponent1 = opponents?.get(0)?.trim() ?: "",
                 eventOpponent2 = opponents?.get(1)?.trim() ?: "",
-                timeOfEvent = response?.tt?.let { timeUnix -> parseEpochTimeToDate(timeUnix) } ?: Date(),
+                timeOfEvent = response?.tt?.let { timeUnix -> parseEpochTimeToDate(timeUnix) },
                 sportCategory = response?.si ?: "",
                 isFavorite = false
             )
