@@ -1,8 +1,10 @@
 package com.vasilis.eventbook.ui.home
 
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,7 +16,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import java.util.*
 import javax.inject.Inject
 
 /**
@@ -22,7 +23,7 @@ import javax.inject.Inject
  * vasilisfouroulis@gmail.com
  */
 
-typealias EventsBySport = Map<SportUiModel, List<EventUiModel>>
+typealias EventsBySport = Map<SportUiModel, SnapshotStateList<EventUiModel>>
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
@@ -31,7 +32,7 @@ class HomeScreenViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _sportEvents = mutableStateOf<EventsBySport>(mutableStateMapOf())
-    val sportEvents: MutableState<Map<SportUiModel, List<EventUiModel>>> = _sportEvents
+    val sportEvents: MutableState<EventsBySport> = _sportEvents
 
     private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
     val uiState: StateFlow<UiState> = _uiState
@@ -42,7 +43,6 @@ class HomeScreenViewModel @Inject constructor(
 
     private fun getSportsList() {
         _uiState.value = UiState.Loading
-
         userCase()
             .onEach { domainResult ->
                 when (domainResult) {
@@ -62,7 +62,7 @@ class HomeScreenViewModel @Inject constructor(
                                         eventOpponent1 = event.eventOpponent1,
                                         eventOpponent2 = event.eventOpponent2,
                                         sportCategory = event.sportCategory,
-                                        timeOfEvent =  event.timeOfEvent
+                                        timeOfEvent = event.timeOfEvent
                                     )
                                 }.toMutableStateList()
                             }
@@ -77,23 +77,27 @@ class HomeScreenViewModel @Inject constructor(
     }
 
     fun setFavorite(
-        sport : SportUiModel,
-        event: EventUiModel
+        sport: SportUiModel,
+        eventId: Int
     ) {
-        _sportEvents.value[sport]?.apply {
-            find {
-                it.id == event.id
-            }?.also {
-                it.isFavorite.value = !event.isFavorite.value
+        _sportEvents
+            .value[sport]
+            ?.apply {
+                find {
+                    it.id == eventId
+                }?.also {
+                    Log.d("MOTHER", "${it.eventOpponent1} ${it.isFavorite}")
+                    it.isFavorite.value = !it.isFavorite.value
+                    Log.d("MOTHER", "${it.eventOpponent1} ${it.isFavorite}")
+                }
+            }?.apply {
+                sortBy { eventToSort ->
+                    eventToSort.isFavorite.value.not()
+                }
+                toMutableStateList()
             }
-        }?.apply {
-            toMutableList().sortBy { eventToSort ->
-                eventToSort.isFavorite.value
-            }
-            toMutableStateList()
-        }
-    }
 
+    }
 }
 
 sealed class UiState {

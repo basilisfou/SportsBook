@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
@@ -16,6 +17,7 @@ import com.vasilis.eventbook.ui.commonUi.ShimmerAnimation
 import com.vasilis.eventbook.ui.event.EventItem
 import com.vasilis.eventbook.ui.sport.SportItem
 import com.vasilis.eventbook.ui.theme.Primary
+import kotlinx.coroutines.launch
 
 /**
  * Created by Vasilis Fouroulis on 18/10/22.
@@ -37,7 +39,7 @@ fun HomeScreen(
             ) { sport, event ->
                 viewModel.setFavorite(
                     sport = sport,
-                    event = event
+                    eventId = event.id
                 )
             }
         }
@@ -49,6 +51,9 @@ fun HomeScreenContent(
     data: EventsBySport,
     onClickFavorite: (sport: SportUiModel, event: EventUiModel) -> Unit
 ) {
+
+    val coroutineScope = rememberCoroutineScope()
+
     LazyColumn(modifier = Modifier.fillMaxSize(), content = {
         items(data.keys.size) { indexSport ->
             val sport = data.keys.toList()[indexSport]
@@ -75,13 +80,21 @@ fun HomeScreenContent(
                     animationSpec = tween(durationMillis = 500),
                 )
             ) {
+                val listState = rememberLazyListState()
+
                 LazyRow(
+                    state = listState,
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(color = Primary)
                 ) {
                     data[sport]?.let {
-                        items(it.size) { index ->
+                        items(
+                            count = it.size,
+                            key = { index ->
+                                it[index].id
+                            }
+                        ) { index ->
                             EventItem(
                                 event = it[index],
                                 onClickFavorite = { event ->
@@ -89,6 +102,9 @@ fun HomeScreenContent(
                                         sport,
                                         event
                                     )
+                                    coroutineScope.launch {
+                                        listState.animateScrollToItem(0)
+                                    }
                                 }
                             )
                         }

@@ -34,10 +34,7 @@ fun EventItem(
     onClickFavorite: (event: EventUiModel) -> Unit
 ) {
 
-    var time by rememberSaveable {
-        mutableStateOf(0L)
-    }
-
+    var time by rememberSaveable {  mutableStateOf(0L) }
     Timer(
         eventTime = event.timeOfEvent,
         changeTimeDelta = {
@@ -149,7 +146,7 @@ fun EventOpponents(
 
 private fun getCountdownText(timeDelta: Long): String {
     return when {
-        TimeUnit.MILLISECONDS.toDays(timeDelta) < 1 && timeDelta != 0L-> {
+        TimeUnit.MILLISECONDS.toDays(timeDelta) < 1 && timeDelta != 0L -> {
             String.format(
                 Locale.getDefault(), "%02d:%02d:%02d",
                 TimeUnit.MILLISECONDS.toHours(timeDelta),

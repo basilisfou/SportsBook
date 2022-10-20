@@ -1,5 +1,4 @@
 package com.vasilis.eventbook.ui.home
-
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import java.util.*
@@ -18,6 +17,6 @@ data class EventUiModel(
     val eventOpponent1: String = "",
     val eventOpponent2: String = "",
     val sportCategory: String = "",
-    val isFavorite: MutableState<Boolean> = mutableStateOf(false),
-    val timeOfEvent: Date
+    val timeOfEvent: Date,
+    val isFavorite: MutableState<Boolean> = mutableStateOf(false)
 )
