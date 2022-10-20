@@ -46,5 +46,8 @@ ext {
 
     androidxAppcompat = "1.5.1"
     androidMaterial = "1.6.1"
+
+    mockitoKotlinVersion = '4.0.0'
+    mockitoAndroidVersion = '4.2.0'
 }
 

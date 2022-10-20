@@ -23,7 +23,7 @@ class EventMapperImplTest(
     }
 
     /**
-     * TEST method timeDeltaTillFinish
+     * TEST method mapResponseToDomain
      */
 
     @Test

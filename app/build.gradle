@@ -80,4 +80,8 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-tooling:$composeVersion"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$composeVersion"
 
+    testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
+    androidTestImplementation "org.mockito:mockito-android:${mockitoAndroidVersion}"
+    testImplementation "org.mockito:mockito-inline:${mockitoAndroidVersion}"
+
 }
