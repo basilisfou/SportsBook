@@ -1,9 +1,7 @@
 package com.vasilis.eventbook.ui.home
 
 import android.os.CountDownTimer
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.toMutableStateList
+import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vasilis.domain.DomainResult
@@ -23,6 +21,7 @@ import javax.inject.Inject
  * vasilisfouroulis@gmail.com
  */
 
+typealias EventsBySport =  Map<SportUiModel, MutableList<EventUiModel>>
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
@@ -30,8 +29,8 @@ class HomeScreenViewModel @Inject constructor(
     private val timeUseCaseUserCase: TimeUseCase
 ) : ViewModel() {
 
-    private val _uiModel = mutableStateOf<List<SportUiModel>>(arrayListOf())
-    val uiModel: MutableState<List<SportUiModel>> = _uiModel
+    private val _sportEvents =  mutableStateOf<EventsBySport>(mutableStateMapOf())
+    val sportEvents: MutableState<Map<SportUiModel, MutableList<EventUiModel>>> = _sportEvents
 
     private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
     val uiState: StateFlow<UiState> = _uiState
@@ -48,29 +47,31 @@ class HomeScreenViewModel @Inject constructor(
                 when (domainResult) {
                     is DomainResult.Success -> {
                         _uiState.value = UiState.Success
-                        _uiModel.value = domainResult.data.map {
-                            SportUiModel(
-                                sportName = it.sportName,
-                                categoryName = it.categoryName,
-                                events = mutableStateOf(
-                                    it.events.map { event ->
-                                        EventUiModel(
-                                            id = event.id,
-                                            eventOpponent1 = event.eventOpponent1,
-                                            eventOpponent2 = event.eventOpponent2,
-                                            sportCategory = event.sportCategory,
-                                        ).also {  eventUiModel ->
-                                            timer(
-                                                timeUseCaseUserCase.timeDeltaTillFinish(event.timeOfEvent),
-                                                changeValueListener = { timeString ->
-                                                    eventUiModel.timeOfEvent.value = timeString
-                                                }
-                                            )
-                                        }
-                                    }
+                        _sportEvents.value = domainResult.data.associateBy(
+                            {
+                                SportUiModel(
+                                    sportName = it.sportName,
+                                    categoryName = it.categoryName,
                                 )
-                            )
-                        }.toMutableStateList()
+                            },
+                            {
+                                it.events.map { event ->
+                                    EventUiModel(
+                                        id = event.id,
+                                        eventOpponent1 = event.eventOpponent1,
+                                        eventOpponent2 = event.eventOpponent2,
+                                        sportCategory = event.sportCategory,
+                                    ).also { eventUiModel ->
+                                        timer(
+                                            timeUseCaseUserCase.timeDeltaTillFinish(event.timeOfEvent),
+                                            changeValueListener = { timeString ->
+                                                eventUiModel.timeOfEvent.value = timeString
+                                            }
+                                        )
+                                    }
+                                }.toMutableStateList()
+                            }
+                        )
                     }
                     is DomainResult.Error -> {
                         _uiState.value = UiState.Error(domainResult.error)
@@ -83,14 +84,18 @@ class HomeScreenViewModel @Inject constructor(
     fun setFavorite(
         event: EventUiModel
     ) {
-        val sport = _uiModel.value.find { it.categoryName == event.sportCategory }
 
-        sport?.events?.value
-            ?.sortedBy { it.isFavorite.value }
-            ?.find { event.id == it.id }
-            ?.isFavorite?.value = !event.isFavorite.value
+        val sport = _sportEvents.value.keys.find {
+            it.categoryName == event.sportCategory
+        }
+
+        _sportEvents.value[sport]?.find {
+            it.id == event.id
+        }?.isFavorite?.value = !event.isFavorite.value
+
+        _sportEvents.value[sport]?.sortedBy { it.isFavorite.value }
+
     }
-
 
 
     private fun timer(
@@ -107,24 +112,46 @@ class HomeScreenViewModel @Inject constructor(
 
                 override fun onFinish() {}
             }.start()
-        }?: kotlin.run {
+        } ?: kotlin.run {
             changeValueListener.invoke("Started")
         }
     }
 
     private fun getCountdownText(timeDelta: Long): String {
         return if (TimeUnit.MILLISECONDS.toDays(timeDelta) < 1) {
-            String.format(Locale.getDefault(), "%02d:%02d:%02d",
+            String.format(
+                Locale.getDefault(), "%02d:%02d:%02d",
                 TimeUnit.MILLISECONDS.toHours(timeDelta),
-                TimeUnit.MILLISECONDS.toMinutes(timeDelta) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(timeDelta)),
-                TimeUnit.MILLISECONDS.toSeconds(timeDelta) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(timeDelta))
+                TimeUnit.MILLISECONDS.toMinutes(timeDelta) - TimeUnit.HOURS.toMinutes(
+                    TimeUnit.MILLISECONDS.toHours(
+                        timeDelta
+                    )
+                ),
+                TimeUnit.MILLISECONDS.toSeconds(timeDelta) - TimeUnit.MINUTES.toSeconds(
+                    TimeUnit.MILLISECONDS.toMinutes(
+                        timeDelta
+                    )
+                )
             )
         } else {
-            String.format(Locale.getDefault(), "%dd %02d:%02d:%02d",
+            String.format(
+                Locale.getDefault(), "%dd %02d:%02d:%02d",
                 TimeUnit.MILLISECONDS.toDays(timeDelta),
-                TimeUnit.MILLISECONDS.toHours(timeDelta) - TimeUnit.DAYS.toHours(TimeUnit.MILLISECONDS.toDays(timeDelta)),
-                TimeUnit.MILLISECONDS.toMinutes(timeDelta) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(timeDelta)),
-                TimeUnit.MILLISECONDS.toSeconds(timeDelta) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(timeDelta))
+                TimeUnit.MILLISECONDS.toHours(timeDelta) - TimeUnit.DAYS.toHours(
+                    TimeUnit.MILLISECONDS.toDays(
+                        timeDelta
+                    )
+                ),
+                TimeUnit.MILLISECONDS.toMinutes(timeDelta) - TimeUnit.HOURS.toMinutes(
+                    TimeUnit.MILLISECONDS.toHours(
+                        timeDelta
+                    )
+                ),
+                TimeUnit.MILLISECONDS.toSeconds(timeDelta) - TimeUnit.MINUTES.toSeconds(
+                    TimeUnit.MILLISECONDS.toMinutes(
+                        timeDelta
+                    )
+                )
             )
         }
     }

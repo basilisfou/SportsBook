@@ -10,7 +10,6 @@ import androidx.compose.runtime.mutableStateOf
 data class SportUiModel(
     val sportName: String = "",
     val categoryName: String = "",
-    val events: MutableState<List<EventUiModel>>
 )
 
 data class EventUiModel(
@@ -18,7 +17,7 @@ data class EventUiModel(
     val eventOpponent1: String = "",
     val eventOpponent2: String = "",
     val sportCategory: String = "",
-    var isFavorite: MutableState<Boolean> = mutableStateOf(false)
+    val isFavorite: MutableState<Boolean> = mutableStateOf(false)
 ) {
     val timeOfEvent: MutableState<String> = mutableStateOf("")
 }

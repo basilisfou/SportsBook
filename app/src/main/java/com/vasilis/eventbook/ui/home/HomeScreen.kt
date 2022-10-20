@@ -25,7 +25,7 @@ fun HomeScreen(
     viewModel: HomeScreenViewModel
 ) {
 
-    val events by viewModel.uiModel
+    val events by viewModel.sportEvents
     val uiState by viewModel.uiState.collectAsState()
 
     when {
@@ -44,12 +44,12 @@ fun HomeScreen(
 
 @Composable
 fun HomeScreenContent(
-    data: List<SportUiModel>,
+    data: EventsBySport,
     onClickFavorite:  ( event : EventUiModel) -> Unit
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize(), content = {
-        items(data.size){ indexSport ->
-            val sport = data[indexSport]
+        items(data.keys.size){ indexSport ->
+            val sport = data.keys.toList()[indexSport]
             var expand by rememberSaveable {
                 mutableStateOf(true)
             }
@@ -78,12 +78,15 @@ fun HomeScreenContent(
                         .fillMaxWidth()
                         .background(color = Primary)
                 ) {
-                    items(sport.events.value.size) { index ->
-                        EventItem(
-                            event = sport.events.value[index],
-                            onClickFavorite = onClickFavorite
-                        )
+                    data[sport]?.let {
+                        items(it.size) { index ->
+                            EventItem(
+                                event = it[index],
+                                onClickFavorite = onClickFavorite
+                            )
+                        }
                     }
+
                 }
             }
         }
