@@ -1,7 +1,5 @@
-
 package com.vasilis.eventbook.ui.event
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -12,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,7 +19,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.vasilis.eventbook.ui.commonUi.ClearRippleTheme
 import com.vasilis.eventbook.ui.home.EventUiModel
+import com.vasilis.eventbook.ui.home.Timer
 import com.vasilis.eventbook.ui.theme.EventTextStyle
+import java.util.*
+import java.util.concurrent.TimeUnit
 
 /**
  * Created by Vasilis Fouroulis on 18/10/22.
@@ -31,6 +33,18 @@ fun EventItem(
     event: EventUiModel,
     onClickFavorite: (event: EventUiModel) -> Unit
 ) {
+
+    var time by rememberSaveable {
+        mutableStateOf(0L)
+    }
+
+    Timer(
+        eventTime = event.timeOfEvent,
+        changeTimeDelta = {
+            time = it ?: 0
+        }
+    )
+
     Column(
         modifier = Modifier
             .height(120.dp)
@@ -39,7 +53,9 @@ fun EventItem(
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
 
-        TimeView(event.timeOfEvent.value)
+        TimeView(
+            time = getCountdownText(time)
+        )
 
         FavoriteView(
             isFavorite = event.isFavorite.value,
@@ -92,7 +108,7 @@ fun FavoriteView(
             imageVector = Icons.Default.Favorite,
             contentDescription = "Favorite",
             tint = if (isFavorite) {
-                Color.Yellow
+                Color.Red
             } else {
                 Color.White
             }
@@ -129,5 +145,49 @@ fun EventOpponents(
             maxLines = 1,
         )
     }
+}
 
+private fun getCountdownText(timeDelta: Long): String {
+    return when {
+        TimeUnit.MILLISECONDS.toDays(timeDelta) < 1 && timeDelta != 0L-> {
+            String.format(
+                Locale.getDefault(), "%02d:%02d:%02d",
+                TimeUnit.MILLISECONDS.toHours(timeDelta),
+                TimeUnit.MILLISECONDS.toMinutes(timeDelta) - TimeUnit.HOURS.toMinutes(
+                    TimeUnit.MILLISECONDS.toHours(
+                        timeDelta
+                    )
+                ),
+                TimeUnit.MILLISECONDS.toSeconds(timeDelta) - TimeUnit.MINUTES.toSeconds(
+                    TimeUnit.MILLISECONDS.toMinutes(
+                        timeDelta
+                    )
+                )
+            )
+        }
+        timeDelta == 0L -> {
+            "Started"
+        }
+        else -> {
+            String.format(
+                Locale.getDefault(), "%dd %02d:%02d:%02d",
+                TimeUnit.MILLISECONDS.toDays(timeDelta),
+                TimeUnit.MILLISECONDS.toHours(timeDelta) - TimeUnit.DAYS.toHours(
+                    TimeUnit.MILLISECONDS.toDays(
+                        timeDelta
+                    )
+                ),
+                TimeUnit.MILLISECONDS.toMinutes(timeDelta) - TimeUnit.HOURS.toMinutes(
+                    TimeUnit.MILLISECONDS.toHours(
+                        timeDelta
+                    )
+                ),
+                TimeUnit.MILLISECONDS.toSeconds(timeDelta) - TimeUnit.MINUTES.toSeconds(
+                    TimeUnit.MILLISECONDS.toMinutes(
+                        timeDelta
+                    )
+                )
+            )
+        }
+    }
 }

@@ -1,7 +1,9 @@
 package com.vasilis.eventbook.ui.home
 
-import android.os.CountDownTimer
-import androidx.compose.runtime.*
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vasilis.domain.DomainResult
@@ -13,7 +15,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import java.util.*
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 /**
@@ -21,7 +22,7 @@ import javax.inject.Inject
  * vasilisfouroulis@gmail.com
  */
 
-typealias EventsBySport =  Map<SportUiModel, MutableList<EventUiModel>>
+typealias EventsBySport = Map<SportUiModel, List<EventUiModel>>
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
@@ -29,8 +30,8 @@ class HomeScreenViewModel @Inject constructor(
     private val timeUseCaseUserCase: TimeUseCase
 ) : ViewModel() {
 
-    private val _sportEvents =  mutableStateOf<EventsBySport>(mutableStateMapOf())
-    val sportEvents: MutableState<Map<SportUiModel, MutableList<EventUiModel>>> = _sportEvents
+    private val _sportEvents = mutableStateOf<EventsBySport>(mutableStateMapOf())
+    val sportEvents: MutableState<Map<SportUiModel, List<EventUiModel>>> = _sportEvents
 
     private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
     val uiState: StateFlow<UiState> = _uiState
@@ -61,14 +62,8 @@ class HomeScreenViewModel @Inject constructor(
                                         eventOpponent1 = event.eventOpponent1,
                                         eventOpponent2 = event.eventOpponent2,
                                         sportCategory = event.sportCategory,
-                                    ).also { eventUiModel ->
-                                        timer(
-                                            timeUseCaseUserCase.timeDeltaTillFinish(event.timeOfEvent),
-                                            changeValueListener = { timeString ->
-                                                eventUiModel.timeOfEvent.value = timeString
-                                            }
-                                        )
-                                    }
+                                        timeOfEvent =  event.timeOfEvent
+                                    )
                                 }.toMutableStateList()
                             }
                         )
@@ -82,79 +77,23 @@ class HomeScreenViewModel @Inject constructor(
     }
 
     fun setFavorite(
+        sport : SportUiModel,
         event: EventUiModel
     ) {
-
-        val sport = _sportEvents.value.keys.find {
-            it.categoryName == event.sportCategory
-        }
-
-        _sportEvents.value[sport]?.find {
-            it.id == event.id
-        }?.isFavorite?.value = !event.isFavorite.value
-
-        _sportEvents.value[sport]?.sortedBy { it.isFavorite.value }
-
-    }
-
-
-    private fun timer(
-        millis: Long?,
-        changeValueListener: (String) -> Unit
-    ) {
-        millis?.let {
-            object : CountDownTimer(it, 1000) {
-                override fun onTick(millisUntilFinished: Long) {
-                    changeValueListener.invoke(
-                        getCountdownText(millisUntilFinished)
-                    )
-                }
-
-                override fun onFinish() {}
-            }.start()
-        } ?: kotlin.run {
-            changeValueListener.invoke("Started")
+        _sportEvents.value[sport]?.apply {
+            find {
+                it.id == event.id
+            }?.also {
+                it.isFavorite.value = !event.isFavorite.value
+            }
+        }?.apply {
+            toMutableList().sortBy { eventToSort ->
+                eventToSort.isFavorite.value
+            }
+            toMutableStateList()
         }
     }
 
-    private fun getCountdownText(timeDelta: Long): String {
-        return if (TimeUnit.MILLISECONDS.toDays(timeDelta) < 1) {
-            String.format(
-                Locale.getDefault(), "%02d:%02d:%02d",
-                TimeUnit.MILLISECONDS.toHours(timeDelta),
-                TimeUnit.MILLISECONDS.toMinutes(timeDelta) - TimeUnit.HOURS.toMinutes(
-                    TimeUnit.MILLISECONDS.toHours(
-                        timeDelta
-                    )
-                ),
-                TimeUnit.MILLISECONDS.toSeconds(timeDelta) - TimeUnit.MINUTES.toSeconds(
-                    TimeUnit.MILLISECONDS.toMinutes(
-                        timeDelta
-                    )
-                )
-            )
-        } else {
-            String.format(
-                Locale.getDefault(), "%dd %02d:%02d:%02d",
-                TimeUnit.MILLISECONDS.toDays(timeDelta),
-                TimeUnit.MILLISECONDS.toHours(timeDelta) - TimeUnit.DAYS.toHours(
-                    TimeUnit.MILLISECONDS.toDays(
-                        timeDelta
-                    )
-                ),
-                TimeUnit.MILLISECONDS.toMinutes(timeDelta) - TimeUnit.HOURS.toMinutes(
-                    TimeUnit.MILLISECONDS.toHours(
-                        timeDelta
-                    )
-                ),
-                TimeUnit.MILLISECONDS.toSeconds(timeDelta) - TimeUnit.MINUTES.toSeconds(
-                    TimeUnit.MILLISECONDS.toMinutes(
-                        timeDelta
-                    )
-                )
-            )
-        }
-    }
 }
 
 sealed class UiState {

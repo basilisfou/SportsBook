@@ -3,7 +3,6 @@ package com.vasilis.eventbook.di
 import com.vasilis.domain.mappers.SportMapper
 import com.vasilis.domain.repository.SportsRepository
 import com.vasilis.domain.usecases.GetSportsEventsUseCase
-import com.vasilis.eventbook.managers.TimeUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,13 +19,10 @@ object UseCaseModule {
 
     @Provides
     fun provideGetSportEventsUseCase(
-        sportRepository : SportsRepository,
+        sportRepository: SportsRepository,
         mapper: SportMapper
     ) = GetSportsEventsUseCase(
         repository = sportRepository,
         mapper = mapper
     )
-
-    @Provides
-    fun provideTimeManagerUseCase() = TimeUseCase()
 }

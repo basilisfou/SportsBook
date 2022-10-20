@@ -2,6 +2,7 @@ package com.vasilis.eventbook.ui.home
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import java.util.*
 
 /**
  * Created by Vasilis Fouroulis on 19/10/22.
@@ -17,7 +18,6 @@ data class EventUiModel(
     val eventOpponent1: String = "",
     val eventOpponent2: String = "",
     val sportCategory: String = "",
-    val isFavorite: MutableState<Boolean> = mutableStateOf(false)
-) {
-    val timeOfEvent: MutableState<String> = mutableStateOf("")
-}
+    val isFavorite: MutableState<Boolean> = mutableStateOf(false),
+    val timeOfEvent: Date
+)

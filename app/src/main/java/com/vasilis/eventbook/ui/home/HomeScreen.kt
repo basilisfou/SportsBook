@@ -5,7 +5,8 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.runtime.*
@@ -33,8 +34,9 @@ fun HomeScreen(
         uiState.isSuccess() -> {
             HomeScreenContent(
                 data = events
-            ) {  event ->
+            ) { sport, event ->
                 viewModel.setFavorite(
+                    sport = sport,
                     event = event
                 )
             }
@@ -45,10 +47,10 @@ fun HomeScreen(
 @Composable
 fun HomeScreenContent(
     data: EventsBySport,
-    onClickFavorite:  ( event : EventUiModel) -> Unit
+    onClickFavorite: (sport: SportUiModel, event: EventUiModel) -> Unit
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize(), content = {
-        items(data.keys.size){ indexSport ->
+        items(data.keys.size) { indexSport ->
             val sport = data.keys.toList()[indexSport]
             var expand by rememberSaveable {
                 mutableStateOf(true)
@@ -82,11 +84,15 @@ fun HomeScreenContent(
                         items(it.size) { index ->
                             EventItem(
                                 event = it[index],
-                                onClickFavorite = onClickFavorite
+                                onClickFavorite = { event ->
+                                    onClickFavorite.invoke(
+                                        sport,
+                                        event
+                                    )
+                                }
                             )
                         }
                     }
-
                 }
             }
         }
