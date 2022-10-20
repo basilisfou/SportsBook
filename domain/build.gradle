@@ -1,0 +1,44 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    namespace 'com.vasilis.domain'
+    compileSdkVersion global.compileSdk
+
+
+    defaultConfig {
+        minSdkVersion global.minSdk
+        targetSdkVersion global.compileSdk
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+dependencies {
+
+    implementation "androidx.core:core-ktx:$ktxCore"
+    implementation "androidx.appcompat:appcompat:$androidxAppcompat"
+    implementation "com.google.android.material:material:$androidMaterial"
+    testImplementation "junit:junit:$junitVersion"
+    androidTestImplementation "androidx.test.ext:junit:$testExtJunit"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$espressCore"
+    implementation "com.google.code.gson:gson:$googleGson"
+
+}

@@ -1,0 +1,50 @@
+// Global Settings
+ext.global = [
+        'minSdk'      : 21,
+        'compileSdk'  : 33,
+        'targetSdk'   : 33,
+        'sourceCompat': JavaVersion.VERSION_11,
+        'targetCompat': JavaVersion.VERSION_11,
+]
+
+// Dependencies Versions
+ext {
+    gradleVersion = '7.3.0'
+    kotlinVersion = '1.7.20'
+
+    //hilt
+    hiltNavigationCompose = '1.0.0'
+    daggerHiltVersion = '2.42'
+
+    //network
+    retrofitVersion = '2.9.0'
+    moshiVersion = '1.13.0'
+    okhttpVersion = '5.0.0-alpha.6'
+    googleGson = '2.8.9'
+
+    //test
+    junitVersion = '4.13.2'
+    testExtJunit = "1.1.3"
+    espressCore = "3.4.0"
+
+    //compose
+    navigationCompose = '2.5.2'
+    activityCompose = "1.6.0"
+    viewModelCompose = "2.5.1"
+    composeConstraint = "1.0.1"
+    composeVersion = '1.2.1'
+    compose_compiler = '1.3.2'
+
+    ktxCore = "1.9.0"
+    ktxRuntime = "2.5.1"
+
+    coil = "2.1.0"
+    lifeCircleService = "2.5.1"
+
+    //coroutines
+    kotlinxCoroutinesCore = "1.6.0"
+
+    androidxAppcompat = "1.5.1"
+    androidMaterial = "1.6.1"
+}
+
