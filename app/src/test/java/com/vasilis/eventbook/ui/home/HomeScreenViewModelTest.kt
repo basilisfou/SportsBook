@@ -6,6 +6,7 @@ import com.vasilis.domain.model.Sport
 import com.vasilis.domain.usecases.GetSportsEventsUseCase
 import com.vasilis.eventbook.base.TestCoroutineRule
 import com.vasilis.eventbook.ui.coroutines.DispatcherProviderImpl
+import com.vasilis.eventbook.ui.uiModel.SportUiModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher

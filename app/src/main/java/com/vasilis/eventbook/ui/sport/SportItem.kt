@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.vasilis.eventbook.ui.theme.Secondary
 import com.vasilis.eventbook.ui.theme.SportTextStyle
 import com.vasilis.eventbook.ui.commonUi.ClearRippleTheme
-import com.vasilis.eventbook.ui.home.SportUiModel
+import com.vasilis.eventbook.ui.uiModel.SportUiModel
 
 /**
  * Created by Vasilis Fouroulis on 19/10/22.

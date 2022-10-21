@@ -1,6 +1,5 @@
 package com.vasilis.eventbook.ui.home
 
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
@@ -10,8 +9,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vasilis.domain.DomainResult
 import com.vasilis.domain.usecases.GetSportsEventsUseCase
-import com.vasilis.eventbook.managers.TimeUseCase
 import com.vasilis.eventbook.ui.coroutines.DispatcherProvider
+import com.vasilis.eventbook.ui.uiModel.EventUiModel
+import com.vasilis.eventbook.ui.uiModel.SportUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
@@ -51,9 +51,12 @@ class HomeScreenViewModel @Inject constructor(
                                 )
                             },
                             {
+                                var shortNumber = 0
                                 it.events.map { event ->
+                                    shortNumber = shortNumber.inc()
                                     EventUiModel(
                                         id = event.id,
+                                        sortNumber = shortNumber,
                                         eventOpponent1 = event.eventOpponent1,
                                         eventOpponent2 = event.eventOpponent2,
                                         sportCategory = event.sportCategory,
@@ -68,7 +71,7 @@ class HomeScreenViewModel @Inject constructor(
                     }
                 }
             }
-            .launchIn(viewModelScope )
+            .launchIn(viewModelScope)
     }
 
     fun setFavorite(
@@ -81,15 +84,10 @@ class HomeScreenViewModel @Inject constructor(
                 find {
                     it.id == eventId
                 }?.also {
-                    Log.d("MOTHER", "${it.eventOpponent1} ${it.isFavorite}")
                     it.isFavorite.value = !it.isFavorite.value
-                    Log.d("MOTHER", "${it.eventOpponent1} ${it.isFavorite}")
                 }
-            }?.apply {
-                sortBy { eventToSort ->
-                    eventToSort.isFavorite.value.not()
-                }
-                //toMutableStateList()
+            }?.also { list ->
+                list.sort()
             }
 
     }

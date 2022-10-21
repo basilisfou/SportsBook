@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,6 +18,8 @@ import com.vasilis.eventbook.ui.commonUi.ShimmerAnimation
 import com.vasilis.eventbook.ui.event.EventItem
 import com.vasilis.eventbook.ui.sport.SportItem
 import com.vasilis.eventbook.ui.theme.Primary
+import com.vasilis.eventbook.ui.uiModel.EventUiModel
+import com.vasilis.eventbook.ui.uiModel.SportUiModel
 import kotlinx.coroutines.launch
 
 /**
@@ -50,6 +53,7 @@ fun HomeScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreenContent(
     data: EventsBySport,
@@ -100,6 +104,7 @@ fun HomeScreenContent(
                             }
                         ) { index ->
                             EventItem(
+                                modifier = Modifier.animateItemPlacement(),
                                 event = it[index],
                                 onClickFavorite = { event ->
                                     onClickFavorite.invoke(

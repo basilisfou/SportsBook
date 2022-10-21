@@ -18,7 +18,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.vasilis.eventbook.ui.commonUi.ClearRippleTheme
-import com.vasilis.eventbook.ui.home.EventUiModel
+import com.vasilis.eventbook.ui.uiModel.EventUiModel
 import com.vasilis.eventbook.ui.home.Timer
 import com.vasilis.eventbook.ui.theme.EventTextStyle
 import java.util.*
@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit
  */
 @Composable
 fun EventItem(
+    modifier: Modifier,
     event: EventUiModel,
     onClickFavorite: (event: EventUiModel) -> Unit
 ) {
@@ -43,7 +44,7 @@ fun EventItem(
     )
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .height(120.dp)
             .width(100.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
