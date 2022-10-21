@@ -1,5 +1,4 @@
 package com.vasilis.eventbook.ui.home
-
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
