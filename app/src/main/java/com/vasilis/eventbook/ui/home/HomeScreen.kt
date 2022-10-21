@@ -31,6 +31,10 @@ fun HomeScreen(
     val events by viewModel.sportEvents
     val uiState by viewModel.uiState.collectAsState()
 
+    LaunchedEffect(key1 = viewModel, block = {
+        viewModel.getSportsList()
+    })
+
     when {
         uiState.isLoading() -> ShimmerAnimation()
         uiState.isSuccess() -> {

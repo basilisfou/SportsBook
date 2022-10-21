@@ -11,11 +11,9 @@ import androidx.lifecycle.viewModelScope
 import com.vasilis.domain.DomainResult
 import com.vasilis.domain.usecases.GetSportsEventsUseCase
 import com.vasilis.eventbook.managers.TimeUseCase
+import com.vasilis.eventbook.ui.coroutines.DispatcherProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
 /**
@@ -28,7 +26,7 @@ typealias EventsBySport = Map<SportUiModel, SnapshotStateList<EventUiModel>>
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
     private val userCase: GetSportsEventsUseCase,
-    private val timeUseCaseUserCase: TimeUseCase
+    private val dispatcherProvider: DispatcherProvider
 ) : ViewModel() {
 
     private val _sportEvents = mutableStateOf<EventsBySport>(mutableStateMapOf())
@@ -37,13 +35,10 @@ class HomeScreenViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
     val uiState: StateFlow<UiState> = _uiState
 
-    init {
-        getSportsList()
-    }
-
-    private fun getSportsList() {
+    fun getSportsList() {
         _uiState.value = UiState.Loading
         userCase()
+            .flowOn(dispatcherProvider.getMainThread())
             .onEach { domainResult ->
                 when (domainResult) {
                     is DomainResult.Success -> {
@@ -73,7 +68,7 @@ class HomeScreenViewModel @Inject constructor(
                     }
                 }
             }
-            .launchIn(viewModelScope)
+            .launchIn(viewModelScope )
     }
 
     fun setFavorite(

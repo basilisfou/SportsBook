@@ -54,6 +54,9 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 }
 
 dependencies {
@@ -80,8 +83,11 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-tooling:$composeVersion"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$composeVersion"
 
+    //test
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
     androidTestImplementation "org.mockito:mockito-android:${mockitoAndroidVersion}"
     testImplementation "org.mockito:mockito-inline:${mockitoAndroidVersion}"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:${coroutinesTest}"
+
 
 }

@@ -17,6 +17,24 @@ data class EventUiModel(
     val eventOpponent1: String = "",
     val eventOpponent2: String = "",
     val sportCategory: String = "",
-    val timeOfEvent: Date?,
+    val timeOfEvent: Date? = null,
     val isFavorite: MutableState<Boolean> = mutableStateOf(false)
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        return when{
+            other !is EventUiModel -> false
+            this.id == other.id -> true
+            else -> false
+        }
+    }
+
+    override fun hashCode(): Int {
+        var result = id
+        result = 31 * result + eventOpponent1.hashCode()
+        result = 31 * result + eventOpponent2.hashCode()
+        result = 31 * result + sportCategory.hashCode()
+        result = 31 * result + (timeOfEvent?.hashCode() ?: 0)
+        result = 31 * result + isFavorite.hashCode()
+        return result
+    }
+}

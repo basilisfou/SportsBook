@@ -1,5 +1,6 @@
-package com.vasilis.domain.mappers
+package com.vasilis.eventbook.domain.mappers
 
+import com.vasilis.domain.mappers.EventMapperImpl
 import com.vasilis.domain.model.Event
 import com.vasilis.domain.response.EventResponse
 import org.junit.Assert.assertEquals

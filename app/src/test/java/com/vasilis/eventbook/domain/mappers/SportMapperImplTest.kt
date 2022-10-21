@@ -1,5 +1,7 @@
-package com.vasilis.domain.mappers
+package com.vasilis.eventbook.domain.mappers
 
+import com.vasilis.domain.mappers.EventMapper
+import com.vasilis.domain.mappers.SportMapperImpl
 import com.vasilis.domain.model.Event
 import com.vasilis.domain.response.SportResponse
 import org.junit.Assert.assertEquals
